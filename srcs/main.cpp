@@ -1,36 +1,30 @@
-#include <GLFW/glfw3.h>
+#include <QGuiApplication>
+#include <iostream>
+#include <QWindow>
+#include "tcontext.hpp"
+#include <QVulkanInstance>
 
-int main() {
-    // 初始化 GLFW
-    if (!glfwInit()) {
-        // 初始化失败，退出程序
-        return -1;
-    }
+int main(int argc, char *argv[]) {
+    QGuiApplication app(argc, argv);
+    //QWindow window;
+    
+    // 创建一个窗口
+    QWindow window;
 
-    // 创建一个窗口，参数为：窗口宽度、窗口高度、窗口标题、窗口监视器（NULL 表示主监视器）、窗口共享标志（NULL 表示不共享）
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
-    if (!window) {
-        // 窗口创建失败，清理并退出
-        glfwTerminate();
-        return -1;
-    }
+    // 设置窗口的标题和大小
+    // window.setWindowTitle("My Window");
+    window.resize(800, 600);
 
-    // 设置窗口的上下文为当前线程的主上下文
-    glfwMakeContextCurrent(window);
+    QVulkanInstance qvkinstance;
 
-    // 主循环，直到用户关闭窗口
-    while (!glfwWindowShouldClose(window)) {
-        // 这里可以添加渲染代码
+    auto tc = tw::TContext::getTContext();
 
-        // 交换前后缓冲区，使得渲染的内容显示在屏幕上
-        glfwSwapBuffers(window);
+    qvkinstance.setVkInstance(tc.instance);
+    
+    window.setVulkanInstance(&qvkinstance);
+    // 显示窗口
+    window.show();
 
-        // 处理所有事件，如键盘输入、鼠标移动等
-        glfwPollEvents();
-    }
+    return  app.exec();
 
-    // 清理并退出
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    return 0;
 }
